@@ -6,7 +6,31 @@ An AI-powered Business Analysis and Digital Transformation platform. Organizatio
 
 ## Status
 
-**Phase 0 — Architecture & Strategy.** No application code yet. This repository currently contains the founding design documents. Read them in order:
+**M0 — Foundation: shipped.** The platform skeleton runs end to end: sign-in → workspace → project → document upload (presigned, straight to object storage) → checkpointed ingestion pipeline → live status in the UI. Tenant isolation is enforced by Postgres Row-Level Security and covered by tenant-escape tests; the audit log is append-only at the database level. Next: **M1 — Document Intelligence** (docs/06).
+
+### Run it locally
+
+```sh
+make setup      # python venv (uv) + pnpm workspace
+make infra-up   # postgres + redis + minio via docker compose
+cp .env.example apps/api/.env
+make migrate
+make api        # :8000
+make worker     # celery worker (second terminal)
+make web        # :3000 (third terminal)
+```
+
+Sign in at http://localhost:3000 with any email (dev auth mode), create a project, drop a PDF on the Documents tab, and watch the pipeline take it to `ready`.
+
+```sh
+make test       # pytest against real Postgres (incl. tenant-escape tests)
+make lint typecheck
+make client     # regenerate OpenAPI schema + typed TS client
+```
+
+## Design documents
+
+Read them in order:
 
 | Doc | Contents |
 |---|---|
@@ -25,14 +49,14 @@ An AI-powered Business Analysis and Digital Transformation platform. Organizatio
 3. **Wedge first, platform second.** V1 is the best tool in the world for one job — turning a pile of process documents into a validated current-state model and an AI-opportunity roadmap for insurance operations. The ten-module platform is the destination, not the starting line.
 4. **Enterprise-grade from the first commit** where retrofitting is expensive (multi-tenancy, audit log, typed contracts), pragmatic everywhere else.
 
-## Repository layout (planned)
+## Repository layout
 
 ```
-apps/web        Next.js frontend
-apps/api        FastAPI backend (REST, OpenAPI)
-apps/worker     Python pipeline workers (ingestion, extraction, generation)
-packages/client Generated TypeScript API client (from OpenAPI)
-packages/schemas Shared extraction/deliverable JSON Schemas
-infra/          Docker Compose (dev), IaC (later)
-docs/           Architecture and product documents (this phase)
+apps/web         Next.js 15 frontend (Tailwind v4, dark-first tokens, TanStack Query)
+apps/api         FastAPI backend — modules/{accounts,auth,projects,documents,pipelines}
+apps/worker      Celery entrypoint over the same Python codebase (see its README)
+packages/client  TypeScript types generated from the API's OpenAPI schema
+packages/schemas openapi.json (source of truth for the client; CI checks freshness)
+infra/           Docker Compose for dev dependencies
+docs/            Architecture and product documents
 ```

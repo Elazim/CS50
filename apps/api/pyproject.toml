@@ -1,0 +1,57 @@
+[project]
+name = "atc-api"
+version = "0.1.0"
+description = "AI Transformation Copilot — API and pipeline workers"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.1",
+    "pydantic[email]>=2.7",
+    "pydantic-settings>=2.2",
+    "structlog>=24.1",
+    "celery[redis]>=5.4",
+    "boto3>=1.34",
+    "itsdangerous>=2.2",
+    "uuid6>=2024.1.12",
+    "httpx>=0.27",
+    "sse-starlette>=2.1",
+    "sentry-sdk[fastapi]>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "moto[s3]>=5.0",
+    "types-boto3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/app"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "T20"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+check_untyped_defs = true
+ignore_missing_imports = true
+mypy_path = "src"
+explicit_package_bases = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning:botocore.*"]

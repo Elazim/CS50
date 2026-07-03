@@ -1,0 +1,13 @@
+{
+  "name": "atc",
+  "private": true,
+  "scripts": {
+    "client:generate": "openapi-typescript packages/schemas/openapi.json -o packages/client/src/schema.d.ts",
+    "web:dev": "pnpm --filter web dev",
+    "web:build": "pnpm --filter web build",
+    "web:typecheck": "pnpm --filter web typecheck"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.0"
+  }
+}

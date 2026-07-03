@@ -1,0 +1,12 @@
+{
+  "name": "@atc/client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript types generated from the API's OpenAPI schema. Do not edit by hand — run `pnpm client:generate`.",
+  "types": "./src/schema.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/schema.d.ts"
+    }
+  }
+}
