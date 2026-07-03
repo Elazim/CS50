@@ -14,10 +14,12 @@ def _setup_project(client, as_user):
     return org_id, project["id"]
 
 
-def _upload(client, org_id, project_id, content: bytes = b"claims SOP v1"):
+def _upload(
+    client, org_id, project_id, content: bytes = b"# Claims SOP\n\nIntake procedure v1.\n"
+):
     res = client.post(
         f"/v1/orgs/{org_id}/projects/{project_id}/documents",
-        json={"filename": "sop.pdf", "mime": "application/pdf", "size_bytes": len(content)},
+        json={"filename": "sop.md", "mime": "text/markdown", "size_bytes": len(content)},
     )
     assert res.status_code == 201, res.text
     payload = res.json()
@@ -25,9 +27,9 @@ def _upload(client, org_id, project_id, content: bytes = b"claims SOP v1"):
     doc = payload["document"]
     assert doc["status"] == "pending_upload"
     # Simulate the browser's presigned PUT by writing the blob directly.
-    key = f"org/{org_id}/projects/{project_id}/documents/{doc['id']}/sop.pdf"
+    key = f"org/{org_id}/projects/{project_id}/documents/{doc['id']}/sop.md"
     storage.s3_client().put_object(
-        Bucket=get_settings().s3_bucket, Key=key, Body=content, ContentType="application/pdf"
+        Bucket=get_settings().s3_bucket, Key=key, Body=content, ContentType="text/markdown"
     )
     return doc, content
 
@@ -43,7 +45,9 @@ def test_full_upload_and_ingest_flow(client, as_user):
 
     run = client.get(f"/v1/orgs/{org_id}/pipeline-runs/{run_id}").json()
     assert run["status"] == "succeeded"
-    assert [s["name"] for s in run["steps"]] == ["verify_blob", "checksum", "finalize"]
+    assert [s["name"] for s in run["steps"]] == [
+        "verify_blob", "checksum", "parse", "classify", "pii_tag", "chunk_embed", "finalize",
+    ]
     assert all(s["status"] == "succeeded" for s in run["steps"])
 
     docs = client.get(f"/v1/orgs/{org_id}/projects/{project_id}/documents").json()

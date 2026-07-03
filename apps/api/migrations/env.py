@@ -9,6 +9,7 @@ from app.db import Base
 # Import every model module so Base.metadata is complete.
 from app import audit as _audit  # noqa: F401
 from app.modules.accounts import models as _accounts  # noqa: F401
+from app.modules.documents import elements as _elements  # noqa: F401
 from app.modules.documents import models as _documents  # noqa: F401
 from app.modules.pipelines import models as _pipelines  # noqa: F401
 from app.modules.projects import models as _projects  # noqa: F401

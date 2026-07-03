@@ -72,6 +72,56 @@
         "title": "DocumentCreate",
         "type": "object"
       },
+      "DocumentDetailOut": {
+        "properties": {
+          "doc_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Class"
+          },
+          "document": {
+            "$ref": "#/components/schemas/DocumentOut"
+          },
+          "element_count": {
+            "title": "Element Count",
+            "type": "integer"
+          },
+          "elements": {
+            "items": {
+              "$ref": "#/components/schemas/ElementOut"
+            },
+            "title": "Elements",
+            "type": "array"
+          },
+          "pii_summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pii Summary"
+          }
+        },
+        "required": [
+          "document",
+          "doc_class",
+          "pii_summary",
+          "element_count",
+          "elements"
+        ],
+        "title": "DocumentDetailOut",
+        "type": "object"
+      },
       "DocumentListItem": {
         "properties": {
           "content_hash": {
@@ -89,6 +139,17 @@
             "format": "date-time",
             "title": "Created At",
             "type": "string"
+          },
+          "doc_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Class"
           },
           "filename": {
             "title": "Filename",
@@ -260,6 +321,74 @@
           "upload_url"
         ],
         "title": "DocumentUploadOut",
+        "type": "object"
+      },
+      "ElementOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "order_key": {
+            "title": "Order Key",
+            "type": "integer"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page"
+          },
+          "pii_types": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Pii Types",
+            "type": "array"
+          },
+          "section_path": {
+            "items": {},
+            "title": "Section Path",
+            "type": "array"
+          },
+          "table_json": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Json"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "page",
+          "section_path",
+          "text",
+          "table_json",
+          "order_key"
+        ],
+        "title": "ElementOut",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -501,6 +630,96 @@
         ],
         "title": "RunStatus",
         "type": "string"
+      },
+      "SearchHit": {
+        "properties": {
+          "chunk_id": {
+            "format": "uuid",
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "doc_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Class"
+          },
+          "document_id": {
+            "format": "uuid",
+            "title": "Document Id",
+            "type": "string"
+          },
+          "element_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Element Ids",
+            "type": "array"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "pages": {
+            "items": {},
+            "title": "Pages",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "section_path": {
+            "items": {},
+            "title": "Section Path",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chunk_id",
+          "document_id",
+          "filename",
+          "doc_class",
+          "text",
+          "score",
+          "section_path",
+          "pages",
+          "element_ids"
+        ],
+        "title": "SearchHit",
+        "type": "object"
+      },
+      "SearchRequest": {
+        "properties": {
+          "query": {
+            "maxLength": 500,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          },
+          "top_k": {
+            "default": 8,
+            "maximum": 25.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "SearchRequest",
+        "type": "object"
       },
       "StepOut": {
         "properties": {
@@ -781,6 +1000,95 @@
         "summary": "Workos Login",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/documents/{document_id}": {
+      "get": {
+        "operationId": "get_document_v1_orgs__org_id__documents__document_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Document Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Document",
+        "tags": [
+          "documents"
         ]
       }
     },
@@ -1338,6 +1646,89 @@
         "summary": "Create Document Upload",
         "tags": [
           "documents"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/projects/{project_id}/search": {
+      "post": {
+        "operationId": "search_project_v1_orgs__org_id__projects__project_id__search_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchHit"
+                  },
+                  "title": "Response Search Project V1 Orgs  Org Id  Projects  Project Id  Search Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Project",
+        "tags": [
+          "search"
         ]
       }
     }

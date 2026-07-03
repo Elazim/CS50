@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 const TABS = [
   { slug: "", label: "Overview", enabled: true },
   { slug: "documents", label: "Documents", enabled: true },
+  { slug: "search", label: "Search", enabled: true },
   { slug: "knowledge", label: "Knowledge", enabled: false },
   { slug: "opportunities", label: "Opportunities", enabled: false },
   { slug: "deliverables", label: "Deliverables", enabled: false },

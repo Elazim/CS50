@@ -28,7 +28,10 @@ test:
 	cd apps/api && .venv/bin/pytest -q
 
 lint:
-	cd apps/api && .venv/bin/ruff check src tests
+	cd apps/api && .venv/bin/ruff check src tests evals
+
+corpus:
+	cd apps/api && PYTHONPATH=src:. .venv/bin/python scripts/build_corpus.py
 
 typecheck:
 	cd apps/api && .venv/bin/mypy src

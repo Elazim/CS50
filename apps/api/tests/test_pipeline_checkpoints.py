@@ -14,13 +14,14 @@ def _ingested_document(client, as_user):
     me = as_user()
     org_id = me["orgs"][0]["id"]
     project_id = client.post(f"/v1/orgs/{org_id}/projects", json={"name": "P"}).json()["id"]
+    content = b"# Procedure\n\nA short but real document.\n"
     res = client.post(
         f"/v1/orgs/{org_id}/projects/{project_id}/documents",
-        json={"filename": "a.pdf", "mime": "application/pdf", "size_bytes": 4},
+        json={"filename": "a.md", "mime": "text/markdown", "size_bytes": len(content)},
     )
     doc = res.json()["document"]
-    key = f"org/{org_id}/projects/{project_id}/documents/{doc['id']}/a.pdf"
-    storage.s3_client().put_object(Bucket=get_settings().s3_bucket, Key=key, Body=b"data")
+    key = f"org/{org_id}/projects/{project_id}/documents/{doc['id']}/a.md"
+    storage.s3_client().put_object(Bucket=get_settings().s3_bucket, Key=key, Body=content)
     run_id = client.post(f"/v1/orgs/{org_id}/documents/{doc['id']}/complete").json()[
         "pipeline_run_id"
     ]

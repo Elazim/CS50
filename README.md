@@ -6,7 +6,9 @@ An AI-powered Business Analysis and Digital Transformation platform. Organizatio
 
 ## Status
 
-**M0 — Foundation: shipped.** The platform skeleton runs end to end: sign-in → workspace → project → document upload (presigned, straight to object storage) → checkpointed ingestion pipeline → live status in the UI. Tenant isolation is enforced by Postgres Row-Level Security and covered by tenant-escape tests; the audit log is append-only at the database level. Next: **M1 — Document Intelligence** (docs/06).
+**M1 — Document Intelligence: shipped.** The ingestion pipeline is real: PDF/DOCX/XLSX/PPTX/TXT/MD parse into structured, provenance-carrying elements; documents are classified, PII-tagged, chunked structure-aware, and embedded (pgvector). Hybrid retrieval (vector + lexical, RRF-fused) powers project search where **every hit cites its exact source passage** and deep-links into the document viewer. A 12-document synthetic insurance-claims corpus plus golden eval bars (retrieval hit-rate, classification accuracy, PII recall) run in CI — AI regression fails the build. AI providers sit behind interfaces: deterministic local implementations for dev/test, Voyage embeddings + Claude via config (`ATC_EMBEDDING_PROVIDER=voyage`, `ATC_ANTHROPIC_API_KEY`), with per-call usage metering. Next: **M2 — Process Intelligence** (docs/06).
+
+*M0 — Foundation: shipped.* Auth, workspaces, projects, presigned uploads, checkpointed pipelines, RLS tenant isolation with tenant-escape tests, append-only audit log.
 
 ### Run it locally
 

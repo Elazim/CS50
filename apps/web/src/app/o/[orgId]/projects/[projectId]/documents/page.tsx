@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useCallback, useRef, useState } from "react";
+import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileText, UploadCloud } from "lucide-react";
 import { api, errorMessage, type DocumentItem } from "@/lib/api";
@@ -161,10 +162,16 @@ export default function DocumentsPage({
             {documents.map((doc) => (
               <tr key={doc.id} className="border-b border-border/50">
                 <td className="py-2.5">
-                  <span className="flex items-center gap-2">
+                  <Link
+                    href={`/o/${orgId}/projects/${projectId}/documents/${doc.id}`}
+                    className="flex items-center gap-2 hover:text-accent"
+                  >
                     <FileText size={14} className="shrink-0 text-muted" />
                     {doc.filename}
-                  </span>
+                    {doc.doc_class ? (
+                      <Badge tone="accent">{doc.doc_class}</Badge>
+                    ) : null}
+                  </Link>
                 </td>
                 <td className="py-2.5 font-mono text-xs text-muted">
                   {formatBytes(doc.size_bytes)}

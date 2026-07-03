@@ -31,6 +31,14 @@ class Settings(BaseSettings):
 
     web_origin: str = "http://localhost:3000"
 
+    # AI providers (docs/03 §8). "local" implementations are deterministic
+    # stand-ins for dev/test; production requires real providers.
+    embedding_provider: Literal["local", "voyage"] = "local"
+    embedding_model: str = "voyage-3"
+    voyage_api_key: str | None = None
+    anthropic_api_key: str | None = None
+    llm_model: str = "claude-sonnet-5"
+
     sentry_dsn: str | None = None
 
     max_upload_bytes: int = 200 * 1024 * 1024
@@ -47,6 +55,8 @@ class Settings(BaseSettings):
                 raise RuntimeError("auth_mode=dev is not allowed in production")
             if self.session_secret == "dev-only-secret-change-me":
                 raise RuntimeError("session_secret must be set in production")
+            if self.embedding_provider == "local":
+                raise RuntimeError("embedding_provider=local is not allowed in production")
 
 
 @lru_cache
