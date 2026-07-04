@@ -160,6 +160,12 @@ def estimate_document_tokens(doc: Document, session: Session) -> int:
     return sum(estimate_tokens(e.text) for e in _elements(session, doc))
 
 
+from app.worker.knowledge_pipeline import (  # noqa: E402
+    extract_knowledge,
+    finalize_knowledge,
+    resolve_entities,
+)
+
 PIPELINES: dict[str, list[StepDef]] = {
     "document_ingest": [
         StepDef("verify_blob", verify_blob),
@@ -169,5 +175,10 @@ PIPELINES: dict[str, list[StepDef]] = {
         StepDef("pii_tag", pii_tag, version="1"),
         StepDef("chunk_embed", chunk_embed, version="1"),
         StepDef("finalize", finalize),
+    ],
+    "knowledge_extract": [
+        StepDef("extract", extract_knowledge, version="1"),
+        StepDef("resolve", resolve_entities, version="1"),
+        StepDef("finalize", finalize_knowledge, version="1"),
     ],
 }

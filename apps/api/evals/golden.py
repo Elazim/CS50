@@ -81,3 +81,24 @@ CLASSIFICATION_ACCURACY_BAR = 0.8
 
 # Planted PII in customer-complaints-log.xlsx: minimum counts by type.
 PII_EXPECTED_MIN = {"email": 4, "phone": 4, "policy_number": 4, "claim_number": 4}
+
+# --- M2: knowledge extraction expectations over the full corpus -------------
+
+EXTRACTION_EXPECTED_ACTORS = [
+    "Intake Coordinator",
+    "Claims Adjuster",
+    "Claims Supervisor",
+    "Complex Claims Unit",
+    "Special Investigations Unit",
+    "Recovery Coordinator",
+    "Claims Director",
+]
+ACTOR_RECALL_BAR = 0.85
+
+EXTRACTION_EXPECTED_SYSTEMS = ["ClaimCore", "CallTrak", "PolicyHub"]
+
+# The corpus plants these waste types; extraction must surface each at least once.
+EXTRACTION_EXPECTED_TAXONOMIES = {"rework", "manual_work", "waiting", "defects"}
+
+MIN_PROCESSES = 3       # intake SOP, triage policy, subrogation at minimum
+MIN_STEPS_PER_MAIN_PROCESS = 4

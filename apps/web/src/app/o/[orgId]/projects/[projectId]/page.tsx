@@ -3,9 +3,10 @@
 import { use } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight, FileText, Network } from "lucide-react";
 import { api } from "@/lib/api";
 import { Card } from "@/components/ui/card";
+import { useKnowledgeSummary } from "@/lib/knowledge";
 
 export default function ProjectOverviewPage({
   params,
@@ -13,6 +14,7 @@ export default function ProjectOverviewPage({
   params: Promise<{ orgId: string; projectId: string }>;
 }) {
   const { orgId, projectId } = use(params);
+  const { data: summary } = useKnowledgeSummary(orgId, projectId);
 
   const { data: documents } = useQuery({
     queryKey: ["documents", orgId, projectId],
@@ -52,12 +54,34 @@ export default function ProjectOverviewPage({
         </Link>
       </Card>
       <Card>
-        <h2 className="text-sm font-medium text-muted">Next up</h2>
-        <p className="mt-3 text-sm leading-relaxed text-muted">
-          Once documents are processed, the knowledge model — processes,
-          actors, systems, pain points with evidence — lands here in the next
-          milestone.
-        </p>
+        <div className="flex items-center gap-2 text-muted">
+          <Network size={15} />
+          <h2 className="text-sm font-medium">Knowledge model</h2>
+        </div>
+        {summary && Object.keys(summary.entities_by_type).length > 0 ? (
+          <>
+            <p className="mt-3 text-sm leading-relaxed">
+              {Object.entries(summary.entities_by_type)
+                .map(([type, count]) => `${count} ${type.replace("_", " ")}s`)
+                .join(" · ")}
+            </p>
+            <p className="mt-1 text-sm text-muted">
+              {summary.open_review_items} item
+              {summary.open_review_items === 1 ? "" : "s"} awaiting review
+            </p>
+          </>
+        ) : (
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            Process documents, then run extraction to build the evidence-linked
+            model: processes, actors, systems, pain points.
+          </p>
+        )}
+        <Link
+          href={`/o/${orgId}/projects/${projectId}/knowledge`}
+          className="mt-4 inline-flex items-center gap-1 text-sm text-accent hover:underline"
+        >
+          Open knowledge model <ArrowRight size={13} />
+        </Link>
       </Card>
     </div>
   );

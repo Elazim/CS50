@@ -66,6 +66,49 @@ def test_classification_accuracy_bar(client, as_user):
     )
 
 
+def test_extraction_bars_over_full_corpus(client, as_user):
+    org_id, project_id, _ = _ingest_all(client, as_user)
+    res = client.post(f"/v1/orgs/{org_id}/projects/{project_id}/knowledge/extract")
+    run = client.get(
+        f"/v1/orgs/{org_id}/pipeline-runs/{res.json()['pipeline_run_id']}"
+    ).json()
+    assert run["status"] == "succeeded", run
+
+    entities = client.get(
+        f"/v1/orgs/{org_id}/projects/{project_id}/entities?limit=500"
+    ).json()
+    by_type: dict[str, list] = {}
+    for entity in entities:
+        by_type.setdefault(entity["type"], []).append(entity)
+
+    actor_names = {e["name"] for e in by_type.get("actor", [])}
+    found = [a for a in golden.EXTRACTION_EXPECTED_ACTORS if a in actor_names]
+    recall = len(found) / len(golden.EXTRACTION_EXPECTED_ACTORS)
+    assert recall >= golden.ACTOR_RECALL_BAR, (
+        f"actor recall {recall:.2f} below bar; "
+        f"missing: {set(golden.EXTRACTION_EXPECTED_ACTORS) - actor_names}"
+    )
+
+    system_names = {e["name"] for e in by_type.get("system", [])}
+    assert set(golden.EXTRACTION_EXPECTED_SYSTEMS) <= system_names
+
+    taxonomies = {
+        e["attrs"].get("taxonomy") for e in by_type.get("pain_point", [])
+    }
+    assert taxonomies >= golden.EXTRACTION_EXPECTED_TAXONOMIES, (
+        f"missing waste taxonomies: {golden.EXTRACTION_EXPECTED_TAXONOMIES - taxonomies}"
+    )
+
+    processes = by_type.get("process", [])
+    assert len(processes) >= golden.MIN_PROCESSES
+    intake = next((p for p in processes if "notice of loss" in p["name"].lower()), None)
+    assert intake is not None, "the FNOL intake process must be identified"
+    graph = client.get(f"/v1/orgs/{org_id}/processes/{intake['id']}/graph").json()
+    assert len(graph["nodes"]) >= golden.MIN_STEPS_PER_MAIN_PROCESS
+
+    assert all(e["evidence"] for e in entities), "evidence coverage must be 100%"
+
+
 def test_pii_recall_on_planted_identifiers(client, as_user):
     org_id, _, by_name = _ingest_all(client, as_user)
     doc = by_name["customer-complaints-log.xlsx"]

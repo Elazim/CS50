@@ -14,7 +14,7 @@ const TABS = [
   { slug: "", label: "Overview", enabled: true },
   { slug: "documents", label: "Documents", enabled: true },
   { slug: "search", label: "Search", enabled: true },
-  { slug: "knowledge", label: "Knowledge", enabled: false },
+  { slug: "knowledge", label: "Knowledge", enabled: true },
   { slug: "opportunities", label: "Opportunities", enabled: false },
   { slug: "deliverables", label: "Deliverables", enabled: false },
 ] as const;
