@@ -544,6 +544,20 @@
         "title": "ExtractOut",
         "type": "object"
       },
+      "GenerateOut": {
+        "properties": {
+          "pipeline_run_id": {
+            "format": "uuid",
+            "title": "Pipeline Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pipeline_run_id"
+        ],
+        "title": "GenerateOut",
+        "type": "object"
+      },
       "GraphEdgeOut": {
         "properties": {
           "from_id": {
@@ -699,6 +713,157 @@
         ],
         "title": "MeResponse",
         "type": "object"
+      },
+      "OpportunityOut": {
+        "properties": {
+          "attrs": {
+            "additionalProperties": true,
+            "title": "Attrs",
+            "type": "object"
+          },
+          "complexity_score": {
+            "title": "Complexity Score",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "evidence": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EvidenceOut"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "impact_score": {
+            "title": "Impact Score",
+            "type": "integer"
+          },
+          "process_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Process Id"
+          },
+          "process_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Process Name"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "risk_score": {
+            "title": "Risk Score",
+            "type": "integer"
+          },
+          "roi": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoiOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rubric_version": {
+            "title": "Rubric Version",
+            "type": "string"
+          },
+          "taxonomy_type": {
+            "$ref": "#/components/schemas/OpportunityTaxonomy"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "process_id",
+          "taxonomy_type",
+          "title",
+          "description",
+          "impact_score",
+          "complexity_score",
+          "risk_score",
+          "rationale",
+          "rubric_version",
+          "review_state",
+          "attrs",
+          "created_at"
+        ],
+        "title": "OpportunityOut",
+        "type": "object"
+      },
+      "OpportunityReviewIn": {
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "edits": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edits"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "OpportunityReviewIn",
+        "type": "object"
+      },
+      "OpportunityTaxonomy": {
+        "enum": [
+          "system_integration",
+          "rpa",
+          "workflow_automation",
+          "document_ai",
+          "decision_engine",
+          "generative_ai",
+          "knowledge_search",
+          "process_redesign",
+          "elimination"
+        ],
+        "title": "OpportunityTaxonomy",
+        "type": "string"
       },
       "OrgSummary": {
         "properties": {
@@ -926,6 +1091,136 @@
         ],
         "title": "ReviewState",
         "type": "string"
+      },
+      "RoadmapHorizon": {
+        "enum": [
+          "30",
+          "90",
+          "180",
+          "365"
+        ],
+        "title": "RoadmapHorizon",
+        "type": "string"
+      },
+      "RoadmapItemOut": {
+        "properties": {
+          "depends_on": {
+            "items": {},
+            "title": "Depends On",
+            "type": "array"
+          },
+          "horizon": {
+            "$ref": "#/components/schemas/RoadmapHorizon"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "opportunity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OpportunityOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "opportunity_id": {
+            "format": "uuid",
+            "title": "Opportunity Id",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "quick_win": {
+            "title": "Quick Win",
+            "type": "boolean"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "opportunity_id",
+          "horizon",
+          "position",
+          "quick_win",
+          "rationale",
+          "depends_on"
+        ],
+        "title": "RoadmapItemOut",
+        "type": "object"
+      },
+      "RoadmapOut": {
+        "properties": {
+          "horizons": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/RoadmapItemOut"
+              },
+              "type": "array"
+            },
+            "title": "Horizons",
+            "type": "object"
+          }
+        },
+        "required": [
+          "horizons"
+        ],
+        "title": "RoadmapOut",
+        "type": "object"
+      },
+      "RoiOut": {
+        "properties": {
+          "assumptions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "computed": {
+            "additionalProperties": true,
+            "title": "Computed",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version",
+          "assumptions",
+          "computed"
+        ],
+        "title": "RoiOut",
+        "type": "object"
+      },
+      "RoiPatchIn": {
+        "properties": {
+          "assumptions": {
+            "description": "[{key, value}] \u2014 edited values; source becomes 'analyst'",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assumptions"
+        ],
+        "title": "RoiPatchIn",
+        "type": "object"
       },
       "RunOut": {
         "properties": {
@@ -1625,6 +1920,165 @@
         "summary": "Review Entity",
         "tags": [
           "knowledge"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/opportunities/{opportunity_id}/review": {
+      "post": {
+        "operationId": "review_opportunity_v1_orgs__org_id__opportunities__opportunity_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "opportunity_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Opportunity Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpportunityReviewIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportunityOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Opportunity",
+        "tags": [
+          "opportunities"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/opportunities/{opportunity_id}/roi": {
+      "patch": {
+        "description": "Analyst edits assumptions; the arithmetic is recomputed in code \u2014\nfigures can never drift from the sheet (docs/01 \u00a72.5).",
+        "operationId": "patch_roi_v1_orgs__org_id__opportunities__opportunity_id__roi_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "opportunity_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Opportunity Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoiPatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoiOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Roi",
+        "tags": [
+          "opportunities"
         ]
       }
     },
@@ -2514,6 +2968,158 @@
         ]
       }
     },
+    "/v1/orgs/{org_id}/projects/{project_id}/opportunities": {
+      "get": {
+        "operationId": "list_opportunities_v1_orgs__org_id__projects__project_id__opportunities_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_rejected",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Rejected",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OpportunityOut"
+                  },
+                  "title": "Response List Opportunities V1 Orgs  Org Id  Projects  Project Id  Opportunities Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Opportunities",
+        "tags": [
+          "opportunities"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/projects/{project_id}/opportunities/generate": {
+      "post": {
+        "operationId": "start_generation_v1_orgs__org_id__projects__project_id__opportunities_generate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Generation",
+        "tags": [
+          "opportunities"
+        ]
+      }
+    },
     "/v1/orgs/{org_id}/projects/{project_id}/review-items": {
       "get": {
         "operationId": "list_review_items_v1_orgs__org_id__projects__project_id__review_items_get",
@@ -2603,6 +3209,145 @@
         "summary": "List Review Items",
         "tags": [
           "knowledge"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/projects/{project_id}/roadmap": {
+      "get": {
+        "operationId": "get_roadmap_v1_orgs__org_id__projects__project_id__roadmap_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoadmapOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Roadmap",
+        "tags": [
+          "opportunities"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/projects/{project_id}/roadmap/generate": {
+      "post": {
+        "description": "Deterministic sequencing over scored opportunities: horizon rules,\nquick-win rule, and integration-before-automation dependencies. The\nroadmap is derived state \u2014 regeneration replaces it; analyst judgments\nlive on the opportunities themselves.",
+        "operationId": "generate_roadmap_v1_orgs__org_id__projects__project_id__roadmap_generate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoadmapOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Roadmap",
+        "tags": [
+          "opportunities"
         ]
       }
     },

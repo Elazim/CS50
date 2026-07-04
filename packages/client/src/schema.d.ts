@@ -149,6 +149,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/opportunities/{opportunity_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Review Opportunity */
+        post: operations["review_opportunity_v1_orgs__org_id__opportunities__opportunity_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/opportunities/{opportunity_id}/roi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Patch Roi
+         * @description Analyst edits assumptions; the arithmetic is recomputed in code —
+         *     figures can never drift from the sheet (docs/01 §2.5).
+         */
+        patch: operations["patch_roi_v1_orgs__org_id__opportunities__opportunity_id__roi_patch"];
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/pipeline-runs/{run_id}": {
         parameters: {
             query?: never;
@@ -333,6 +371,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/projects/{project_id}/opportunities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Opportunities */
+        get: operations["list_opportunities_v1_orgs__org_id__projects__project_id__opportunities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/projects/{project_id}/opportunities/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Generation */
+        post: operations["start_generation_v1_orgs__org_id__projects__project_id__opportunities_generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/projects/{project_id}/review-items": {
         parameters: {
             query?: never;
@@ -344,6 +416,46 @@ export interface paths {
         get: operations["list_review_items_v1_orgs__org_id__projects__project_id__review_items_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/projects/{project_id}/roadmap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Roadmap */
+        get: operations["get_roadmap_v1_orgs__org_id__projects__project_id__roadmap_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/projects/{project_id}/roadmap/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Roadmap
+         * @description Deterministic sequencing over scored opportunities: horizon rules,
+         *     quick-win rule, and integration-before-automation dependencies. The
+         *     roadmap is derived state — regeneration replaces it; analyst judgments
+         *     live on the opportunities themselves.
+         */
+        post: operations["generate_roadmap_v1_orgs__org_id__projects__project_id__roadmap_generate_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -608,6 +720,14 @@ export interface components {
              */
             pipeline_run_id: string;
         };
+        /** GenerateOut */
+        GenerateOut: {
+            /**
+             * Pipeline Run Id
+             * Format: uuid
+             */
+            pipeline_run_id: string;
+        };
         /** GraphEdgeOut */
         GraphEdgeOut: {
             /**
@@ -682,6 +802,63 @@ export interface components {
             /** Orgs */
             orgs: components["schemas"]["OrgSummary"][];
         };
+        /** OpportunityOut */
+        OpportunityOut: {
+            /** Attrs */
+            attrs: {
+                [key: string]: unknown;
+            };
+            /** Complexity Score */
+            complexity_score: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string;
+            /**
+             * Evidence
+             * @default []
+             */
+            evidence: components["schemas"]["EvidenceOut"][];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Impact Score */
+            impact_score: number;
+            /** Process Id */
+            process_id: string | null;
+            /** Process Name */
+            process_name?: string | null;
+            /** Rationale */
+            rationale: string;
+            review_state: components["schemas"]["ReviewState"];
+            /** Risk Score */
+            risk_score: number;
+            roi?: components["schemas"]["RoiOut"] | null;
+            /** Rubric Version */
+            rubric_version: string;
+            taxonomy_type: components["schemas"]["OpportunityTaxonomy"];
+            /** Title */
+            title: string;
+        };
+        /** OpportunityReviewIn */
+        OpportunityReviewIn: {
+            /** Action */
+            action: string;
+            /** Edits */
+            edits?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * OpportunityTaxonomy
+         * @enum {string}
+         */
+        OpportunityTaxonomy: "system_integration" | "rpa" | "workflow_automation" | "document_ai" | "decision_engine" | "generative_ai" | "knowledge_search" | "process_redesign" | "elimination";
         /** OrgSummary */
         OrgSummary: {
             /**
@@ -790,6 +967,64 @@ export interface components {
          * @enum {string}
          */
         ReviewState: "ai_generated" | "confirmed" | "edited" | "rejected";
+        /**
+         * RoadmapHorizon
+         * @enum {string}
+         */
+        RoadmapHorizon: "30" | "90" | "180" | "365";
+        /** RoadmapItemOut */
+        RoadmapItemOut: {
+            /** Depends On */
+            depends_on: unknown[];
+            horizon: components["schemas"]["RoadmapHorizon"];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            opportunity?: components["schemas"]["OpportunityOut"] | null;
+            /**
+             * Opportunity Id
+             * Format: uuid
+             */
+            opportunity_id: string;
+            /** Position */
+            position: number;
+            /** Quick Win */
+            quick_win: boolean;
+            /** Rationale */
+            rationale: string;
+        };
+        /** RoadmapOut */
+        RoadmapOut: {
+            /** Horizons */
+            horizons: {
+                [key: string]: components["schemas"]["RoadmapItemOut"][];
+            };
+        };
+        /** RoiOut */
+        RoiOut: {
+            /** Assumptions */
+            assumptions: {
+                [key: string]: unknown;
+            }[];
+            /** Computed */
+            computed: {
+                [key: string]: unknown;
+            };
+            /** Version */
+            version: number;
+        };
+        /** RoiPatchIn */
+        RoiPatchIn: {
+            /**
+             * Assumptions
+             * @description [{key, value}] — edited values; source becomes 'analyst'
+             */
+            assumptions: {
+                [key: string]: unknown;
+            }[];
+        };
         /** RunOut */
         RunOut: {
             /** Context */
@@ -1130,6 +1365,82 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EntityOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_opportunity_v1_orgs__org_id__opportunities__opportunity_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpportunityReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpportunityOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_roi_v1_orgs__org_id__opportunities__opportunity_id__roi_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoiPatchIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoiOut"];
                 };
             };
             /** @description Validation Error */
@@ -1562,6 +1873,76 @@ export interface operations {
             };
         };
     };
+    list_opportunities_v1_orgs__org_id__projects__project_id__opportunities_get: {
+        parameters: {
+            query?: {
+                include_rejected?: boolean;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpportunityOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_generation_v1_orgs__org_id__projects__project_id__opportunities_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_review_items_v1_orgs__org_id__projects__project_id__review_items_get: {
         parameters: {
             query?: {
@@ -1586,6 +1967,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewItemOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_roadmap_v1_orgs__org_id__projects__project_id__roadmap_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoadmapOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_roadmap_v1_orgs__org_id__projects__project_id__roadmap_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoadmapOut"];
                 };
             };
             /** @description Validation Error */

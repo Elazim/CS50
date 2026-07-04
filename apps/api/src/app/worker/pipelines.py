@@ -165,6 +165,15 @@ from app.worker.knowledge_pipeline import (  # noqa: E402
     finalize_knowledge,
     resolve_entities,
 )
+from app.worker.opportunity_pipeline import (  # noqa: E402
+    finalize as finalize_opportunities,
+)
+from app.worker.opportunity_pipeline import (  # noqa: E402
+    generate as generate_opps,
+)
+from app.worker.opportunity_pipeline import (  # noqa: E402
+    propose_roi,
+)
 
 PIPELINES: dict[str, list[StepDef]] = {
     "document_ingest": [
@@ -180,5 +189,10 @@ PIPELINES: dict[str, list[StepDef]] = {
         StepDef("extract", extract_knowledge, version="1"),
         StepDef("resolve", resolve_entities, version="1"),
         StepDef("finalize", finalize_knowledge, version="1"),
+    ],
+    "opportunity_generate": [
+        StepDef("generate", generate_opps, version="1"),
+        StepDef("propose_roi", propose_roi, version="1"),
+        StepDef("finalize", finalize_opportunities, version="1"),
     ],
 }

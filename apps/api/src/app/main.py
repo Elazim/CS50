@@ -7,6 +7,7 @@ from app.logging import setup_logging
 from app.modules.auth.routes import router as auth_router
 from app.modules.documents.routes import router as documents_router
 from app.modules.knowledge.routes import router as knowledge_router
+from app.modules.opportunities.routes import router as opportunities_router
 from app.modules.pipelines.routes import router as pipelines_router
 from app.modules.projects.routes import router as projects_router
 from app.modules.retrieval.routes import router as retrieval_router
@@ -42,6 +43,7 @@ def create_app() -> FastAPI:
     app.include_router(pipelines_router, prefix="/v1")
     app.include_router(retrieval_router, prefix="/v1")
     app.include_router(knowledge_router, prefix="/v1")
+    app.include_router(opportunities_router, prefix="/v1")
 
     @app.get("/healthz", include_in_schema=False)
     def healthz() -> dict:
