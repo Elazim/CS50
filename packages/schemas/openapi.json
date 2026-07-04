@@ -10,6 +10,70 @@
         "title": "Confidence",
         "type": "string"
       },
+      "DeliverableCreate": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/DeliverableType"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "DeliverableCreate",
+        "type": "object"
+      },
+      "DeliverableOut": {
+        "properties": {
+          "formats": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Formats",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_version": {
+            "title": "Latest Version",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DeliverableType"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "latest_version",
+          "updated_at"
+        ],
+        "title": "DeliverableOut",
+        "type": "object"
+      },
+      "DeliverableType": {
+        "enum": [
+          "executive_summary",
+          "current_state_assessment",
+          "opportunity_register",
+          "roadmap_deck"
+        ],
+        "title": "DeliverableType",
+        "type": "string"
+      },
       "DevLoginRequest": {
         "properties": {
           "email": {
@@ -542,6 +606,24 @@
           "pipeline_run_id"
         ],
         "title": "ExtractOut",
+        "type": "object"
+      },
+      "GenerateDeliverableOut": {
+        "properties": {
+          "deliverable": {
+            "$ref": "#/components/schemas/DeliverableOut"
+          },
+          "pipeline_run_id": {
+            "format": "uuid",
+            "title": "Pipeline Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "deliverable",
+          "pipeline_run_id"
+        ],
+        "title": "GenerateDeliverableOut",
         "type": "object"
       },
       "GenerateOut": {
@@ -1403,6 +1485,25 @@
         "title": "SearchRequest",
         "type": "object"
       },
+      "SpecOut": {
+        "properties": {
+          "spec": {
+            "additionalProperties": true,
+            "title": "Spec",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version",
+          "spec"
+        ],
+        "title": "SpecOut",
+        "type": "object"
+      },
       "StepOut": {
         "properties": {
           "attempt": {
@@ -1511,6 +1612,61 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VersionOut": {
+        "properties": {
+          "citation_count": {
+            "title": "Citation Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "formats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Formats",
+            "type": "array"
+          },
+          "generator_version": {
+            "title": "Generator Version",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "review_coverage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Coverage"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "generator_version",
+          "formats",
+          "review_coverage",
+          "citation_count",
+          "created_at"
+        ],
+        "title": "VersionOut",
         "type": "object"
       }
     }
@@ -1682,6 +1838,224 @@
         "summary": "Workos Login",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/deliverable-versions/{version_id}/download": {
+      "get": {
+        "operationId": "download_v1_orgs__org_id__deliverable_versions__version_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": true,
+            "schema": {
+              "title": "Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download",
+        "tags": [
+          "deliverables"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/deliverable-versions/{version_id}/spec": {
+      "get": {
+        "operationId": "get_spec_v1_orgs__org_id__deliverable_versions__version_id__spec_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Spec",
+        "tags": [
+          "deliverables"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/deliverables/{deliverable_id}/versions": {
+      "get": {
+        "operationId": "list_versions_v1_orgs__org_id__deliverables__deliverable_id__versions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deliverable_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Deliverable Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VersionOut"
+                  },
+                  "title": "Response List Versions V1 Orgs  Org Id  Deliverables  Deliverable Id  Versions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Versions",
+        "tags": [
+          "deliverables"
         ]
       }
     },
@@ -2551,6 +2925,157 @@
         "summary": "Get Project",
         "tags": [
           "projects"
+        ]
+      }
+    },
+    "/v1/orgs/{org_id}/projects/{project_id}/deliverables": {
+      "get": {
+        "operationId": "list_deliverables_v1_orgs__org_id__projects__project_id__deliverables_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DeliverableOut"
+                  },
+                  "title": "Response List Deliverables V1 Orgs  Org Id  Projects  Project Id  Deliverables Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Deliverables",
+        "tags": [
+          "deliverables"
+        ]
+      },
+      "post": {
+        "description": "Get-or-create the deliverable for this (project, type) and produce a\nnew immutable version of it.",
+        "operationId": "generate_deliverable_v1_orgs__org_id__projects__project_id__deliverables_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Org Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "atc_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Atc Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliverableCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateDeliverableOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Deliverable",
+        "tags": [
+          "deliverables"
         ]
       }
     },

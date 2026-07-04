@@ -95,6 +95,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/deliverable-versions/{version_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download */
+        get: operations["download_v1_orgs__org_id__deliverable_versions__version_id__download_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/deliverable-versions/{version_id}/spec": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Spec */
+        get: operations["get_spec_v1_orgs__org_id__deliverable_versions__version_id__spec_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/deliverables/{deliverable_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Versions */
+        get: operations["list_versions_v1_orgs__org_id__deliverables__deliverable_id__versions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/documents/{document_id}": {
         parameters: {
             query?: never;
@@ -290,6 +341,28 @@ export interface paths {
         get: operations["get_project_v1_orgs__org_id__projects__project_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/projects/{project_id}/deliverables": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Deliverables */
+        get: operations["list_deliverables_v1_orgs__org_id__projects__project_id__deliverables_get"];
+        put?: never;
+        /**
+         * Generate Deliverable
+         * @description Get-or-create the deliverable for this (project, type) and produce a
+         *     new immutable version of it.
+         */
+        post: operations["generate_deliverable_v1_orgs__org_id__projects__project_id__deliverables_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -505,6 +578,38 @@ export interface components {
          * @enum {string}
          */
         Confidence: "high" | "medium" | "low";
+        /** DeliverableCreate */
+        DeliverableCreate: {
+            type: components["schemas"]["DeliverableType"];
+        };
+        /** DeliverableOut */
+        DeliverableOut: {
+            /**
+             * Formats
+             * @default []
+             */
+            formats: string[];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Latest Version */
+            latest_version: number;
+            /** Title */
+            title: string;
+            type: components["schemas"]["DeliverableType"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * DeliverableType
+         * @enum {string}
+         */
+        DeliverableType: "executive_summary" | "current_state_assessment" | "opportunity_register" | "roadmap_deck";
         /** DevLoginRequest */
         DevLoginRequest: {
             /**
@@ -714,6 +819,15 @@ export interface components {
         };
         /** ExtractOut */
         ExtractOut: {
+            /**
+             * Pipeline Run Id
+             * Format: uuid
+             */
+            pipeline_run_id: string;
+        };
+        /** GenerateDeliverableOut */
+        GenerateDeliverableOut: {
+            deliverable: components["schemas"]["DeliverableOut"];
             /**
              * Pipeline Run Id
              * Format: uuid
@@ -1095,6 +1209,15 @@ export interface components {
              */
             top_k: number;
         };
+        /** SpecOut */
+        SpecOut: {
+            /** Spec */
+            spec: {
+                [key: string]: unknown;
+            };
+            /** Version */
+            version: number;
+        };
         /** StepOut */
         StepOut: {
             /** Attempt */
@@ -1126,6 +1249,29 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** VersionOut */
+        VersionOut: {
+            /** Citation Count */
+            citation_count: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Formats */
+            formats: string[];
+            /** Generator Version */
+            generator_version: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Review Coverage */
+            review_coverage: string | null;
+            /** Version */
+            version: number;
         };
     };
     responses: never;
@@ -1265,6 +1411,110 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    download_v1_orgs__org_id__deliverable_versions__version_id__download_get: {
+        parameters: {
+            query: {
+                format: string;
+            };
+            header?: never;
+            path: {
+                version_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_spec_v1_orgs__org_id__deliverable_versions__version_id__spec_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpecOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_versions_v1_orgs__org_id__deliverables__deliverable_id__versions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                deliverable_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VersionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1681,6 +1931,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProjectOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_deliverables_v1_orgs__org_id__projects__project_id__deliverables_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverableOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_deliverable_v1_orgs__org_id__projects__project_id__deliverables_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                org_id: string;
+            };
+            cookie?: {
+                atc_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeliverableCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerateDeliverableOut"];
                 };
             };
             /** @description Validation Error */

@@ -48,6 +48,12 @@ def head_object(key: str) -> dict | None:
         raise
 
 
+def put_object_bytes(key: str, data: bytes, mime: str) -> None:
+    s3_client().put_object(
+        Bucket=get_settings().s3_bucket, Key=key, Body=data, ContentType=mime
+    )
+
+
 def get_object_bytes(key: str) -> bytes:
     obj = s3_client().get_object(Bucket=get_settings().s3_bucket, Key=key)
     return obj["Body"].read()

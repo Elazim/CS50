@@ -10,6 +10,7 @@ from app.db import Base
 from app import audit as _audit  # noqa: F401
 from app.modules.accounts import models as _accounts  # noqa: F401
 from app.modules.documents import elements as _elements  # noqa: F401
+from app.modules.deliverables import models as _deliverables  # noqa: F401
 from app.modules.documents import models as _documents  # noqa: F401
 from app.modules.knowledge import models as _knowledge  # noqa: F401
 from app.modules.opportunities import models as _opportunities  # noqa: F401

@@ -5,6 +5,7 @@ from app.config import get_settings
 from app.errors import register_error_handlers
 from app.logging import setup_logging
 from app.modules.auth.routes import router as auth_router
+from app.modules.deliverables.routes import router as deliverables_router
 from app.modules.documents.routes import router as documents_router
 from app.modules.knowledge.routes import router as knowledge_router
 from app.modules.opportunities.routes import router as opportunities_router
@@ -44,6 +45,7 @@ def create_app() -> FastAPI:
     app.include_router(retrieval_router, prefix="/v1")
     app.include_router(knowledge_router, prefix="/v1")
     app.include_router(opportunities_router, prefix="/v1")
+    app.include_router(deliverables_router, prefix="/v1")
 
     @app.get("/healthz", include_in_schema=False)
     def healthz() -> dict:

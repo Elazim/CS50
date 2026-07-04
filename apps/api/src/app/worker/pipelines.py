@@ -160,6 +160,12 @@ def estimate_document_tokens(doc: Document, session: Session) -> int:
     return sum(estimate_tokens(e.text) for e in _elements(session, doc))
 
 
+from app.worker.deliverable_pipeline import (  # noqa: E402
+    build_and_render,
+)
+from app.worker.deliverable_pipeline import (  # noqa: E402
+    finalize as finalize_deliverable,
+)
 from app.worker.knowledge_pipeline import (  # noqa: E402
     extract_knowledge,
     finalize_knowledge,
@@ -194,5 +200,9 @@ PIPELINES: dict[str, list[StepDef]] = {
         StepDef("generate", generate_opps, version="1"),
         StepDef("propose_roi", propose_roi, version="1"),
         StepDef("finalize", finalize_opportunities, version="1"),
+    ],
+    "deliverable_generate": [
+        StepDef("build_and_render", build_and_render, version="1"),
+        StepDef("finalize", finalize_deliverable, version="1"),
     ],
 }

@@ -16,7 +16,7 @@ const TABS = [
   { slug: "search", label: "Search", enabled: true },
   { slug: "knowledge", label: "Knowledge", enabled: true },
   { slug: "opportunities", label: "Opportunities", enabled: true },
-  { slug: "deliverables", label: "Deliverables", enabled: false },
+  { slug: "deliverables", label: "Deliverables", enabled: true },
 ] as const;
 
 export default function ProjectLayout({
