@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderKanban, Plus } from "lucide-react";
+import { FolderKanban, Plus, Sparkles } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -31,6 +31,21 @@ export default function ProjectsPage({
       if (error) throw error;
       return data;
     },
+  });
+
+  const seedSample = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await api.POST("/v1/orgs/{org_id}/projects/sample", {
+        params: { path: { org_id: orgId } },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast("Sample project seeded — documents are processing");
+      queryClient.invalidateQueries({ queryKey: ["projects", orgId] });
+    },
+    onError: (error) => toast(errorMessage(error), "error"),
   });
 
   const createProject = useMutation({
@@ -125,11 +140,21 @@ export default function ProjectsPage({
       ) : (
         <EmptyState
           title="No projects yet"
-          description="Create a project, then upload its SOPs, process docs, and policies to start building the knowledge model."
+          description="Create a project and upload its SOPs and process docs — or load the sample insurance-claims project to see the full loop in two minutes."
           action={
-            <Button onClick={() => setCreating(true)}>
-              <Plus size={15} /> New project
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={() => setCreating(true)}>
+                <Plus size={15} /> New project
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => seedSample.mutate()}
+                disabled={seedSample.isPending}
+              >
+                <Sparkles size={15} />
+                {seedSample.isPending ? "Seeding…" : "Load sample project"}
+              </Button>
+            </div>
           }
         />
       )}

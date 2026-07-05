@@ -62,6 +62,28 @@ def create_project(body: ProjectCreate, ctx: OrgCtx) -> ProjectOut:
     return ProjectOut.model_validate(project)
 
 
+class SampleProjectOut(BaseModel):
+    project: ProjectOut
+    pipeline_run_ids: list[uuid.UUID]
+
+
+@router.post("/sample", response_model=SampleProjectOut, status_code=201)
+def create_sample_project(ctx: OrgCtx) -> SampleProjectOut:
+    """Seed the synthetic insurance corpus into a new project (docs/06 M5)."""
+    ctx.require_role(Role.analyst)
+    from app.modules.projects.sample import seed_sample_project
+
+    project, run_ids = seed_sample_project(ctx.db, org_id=ctx.org_id)
+    audit(
+        ctx.db, org_id=ctx.org_id, actor_id=ctx.user.id,
+        action="project.sample_seeded", resource_type="project",
+        resource_id=project.id, meta={"documents": len(run_ids)},
+    )
+    return SampleProjectOut(
+        project=ProjectOut.model_validate(project), pipeline_run_ids=run_ids
+    )
+
+
 @router.get("/{project_id}", response_model=ProjectOut)
 def get_project(project_id: uuid.UUID, ctx: OrgCtx) -> ProjectOut:
     project = ctx.db.get(Project, project_id)

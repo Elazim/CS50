@@ -43,6 +43,11 @@ class Settings(BaseSettings):
 
     max_upload_bytes: int = 200 * 1024 * 1024
 
+    # Requests per minute per client IP on abusable surfaces (docs/05 §5).
+    rate_limit_auth: int = 20
+    rate_limit_uploads: int = 120
+    rate_limit_pipelines: int = 30
+
     @field_validator("s3_endpoint_url", mode="before")
     @classmethod
     def _empty_endpoint_is_none(cls, v: str | None) -> str | None:

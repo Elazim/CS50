@@ -12,6 +12,7 @@ from app.modules.accounts import models as _accounts  # noqa: F401
 from app.modules.documents import elements as _elements  # noqa: F401
 from app.modules.deliverables import models as _deliverables  # noqa: F401
 from app.modules.documents import models as _documents  # noqa: F401
+from app.modules.accounts import feedback as _feedback  # noqa: F401
 from app.modules.knowledge import models as _knowledge  # noqa: F401
 from app.modules.opportunities import models as _opportunities  # noqa: F401
 from app.modules.pipelines import models as _pipelines  # noqa: F401

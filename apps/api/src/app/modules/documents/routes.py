@@ -15,6 +15,7 @@ from app.modules.documents.models import Document, DocumentStatus
 from app.modules.pipelines.models import PipelineRun, RunStatus
 from app.modules.pipelines.service import enqueue_run
 from app.modules.projects.models import Project
+from app.parsing.registry import SUPPORTED_EXTENSIONS
 from app.storage import document_blob_key, head_object, presign_put
 
 router = APIRouter(tags=["documents"])
@@ -66,6 +67,12 @@ def create_document_upload(
     ctx.require_role(Role.analyst)
     if body.size_bytes > get_settings().max_upload_bytes:
         raise AppError("File exceeds the upload size limit")
+    extension = body.filename.rsplit(".", 1)[-1].lower() if "." in body.filename else ""
+    if extension not in SUPPORTED_EXTENSIONS:
+        raise AppError(
+            f"Unsupported file type '.{extension}'. "
+            f"Supported: {', '.join(SUPPORTED_EXTENSIONS)}"
+        )
     project = ctx.db.get(Project, project_id)
     if project is None or project.deleted_at is not None:
         raise NotFoundError("Project not found")

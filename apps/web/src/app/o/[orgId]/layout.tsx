@@ -3,7 +3,7 @@
 import { use, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { useMe, useSignOut } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
@@ -45,6 +45,11 @@ export default function OrgLayout({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-faint">{me.email}</span>
+          <Link href={`/o/${orgId}/settings`} aria-label="Workspace settings">
+            <Button variant="ghost" size="sm">
+              <Settings size={14} />
+            </Button>
+          </Link>
           <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out">
             <LogOut size={14} />
           </Button>

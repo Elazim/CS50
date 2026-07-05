@@ -55,6 +55,14 @@ def clean_tables(database):
 
 
 @pytest.fixture(autouse=True)
+def fresh_rate_limits():
+    from app.middleware import reset_rate_limits
+
+    reset_rate_limits()
+    yield
+
+
+@pytest.fixture(autouse=True)
 def object_storage():
     with mock_aws():
         storage.s3_client.cache_clear()

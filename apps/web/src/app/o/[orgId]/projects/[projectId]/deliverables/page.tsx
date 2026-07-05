@@ -8,6 +8,8 @@ import {
   History,
   Presentation,
   RefreshCw,
+  ThumbsDown,
+  ThumbsUp,
 } from "lucide-react";
 import { api, API_URL, errorMessage } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -153,9 +155,17 @@ export default function DeliverablesPage({
               ) : null}
             </div>
             {deliverable && historyFor === deliverable.id ? (
-              <VersionHistory orgId={orgId} deliverable={deliverable} />
+              <VersionHistory
+                orgId={orgId}
+                projectId={projectId}
+                deliverable={deliverable}
+              />
             ) : deliverable && deliverable.latest_version > 0 ? (
-              <LatestDownloads orgId={orgId} deliverable={deliverable} />
+              <LatestDownloads
+                orgId={orgId}
+                projectId={projectId}
+                deliverable={deliverable}
+              />
             ) : null}
           </Card>
         );
@@ -178,6 +188,62 @@ function useVersions(orgId: string, deliverableId: string) {
   });
 }
 
+function FeedbackButtons({
+  orgId,
+  projectId,
+  version,
+}: {
+  orgId: string;
+  projectId: string;
+  version: Version;
+}) {
+  const toast = useToast();
+  const [sent, setSent] = useState<number | null>(null);
+  const submit = useMutation({
+    mutationFn: async (rating: number) => {
+      const { error } = await api.POST("/v1/orgs/{org_id}/feedback", {
+        params: { path: { org_id: orgId } },
+        body: {
+          project_id: projectId,
+          subject_type: "deliverable_version",
+          subject_id: version.id,
+          rating,
+          comment: null,
+        },
+      });
+      if (error) throw error;
+      return rating;
+    },
+    onSuccess: (rating) => {
+      setSent(rating);
+      toast("Thanks — feedback recorded");
+    },
+    onError: (error) => toast(errorMessage(error), "error"),
+  });
+  return (
+    <span className="inline-flex gap-0.5">
+      <button
+        type="button"
+        aria-label="Good deliverable"
+        disabled={sent !== null}
+        onClick={() => submit.mutate(1)}
+        className={sent === 1 ? "text-success" : "text-faint hover:text-success"}
+      >
+        <ThumbsUp size={12} />
+      </button>
+      <button
+        type="button"
+        aria-label="Needs work"
+        disabled={sent !== null}
+        onClick={() => submit.mutate(-1)}
+        className={sent === -1 ? "text-danger" : "text-faint hover:text-danger"}
+      >
+        <ThumbsDown size={12} />
+      </button>
+    </span>
+  );
+}
+
 function DownloadRow({ orgId, version }: { orgId: string; version: Version }) {
   return (
     <span className="flex flex-wrap gap-1.5">
@@ -196,9 +262,11 @@ function DownloadRow({ orgId, version }: { orgId: string; version: Version }) {
 
 function LatestDownloads({
   orgId,
+  projectId,
   deliverable,
 }: {
   orgId: string;
+  projectId: string;
   deliverable: Deliverable;
 }) {
   const { data: versions } = useVersions(orgId, deliverable.id);
@@ -207,6 +275,7 @@ function LatestDownloads({
   return (
     <div className="flex items-center gap-2 border-t border-border/60 pt-3">
       <DownloadRow orgId={orgId} version={latest} />
+      <FeedbackButtons orgId={orgId} projectId={projectId} version={latest} />
       <span className="ml-auto text-xs text-faint">
         {latest.citation_count} sources · model {latest.review_coverage} reviewed
       </span>
@@ -216,9 +285,11 @@ function LatestDownloads({
 
 function VersionHistory({
   orgId,
+  projectId,
   deliverable,
 }: {
   orgId: string;
+  projectId: string;
   deliverable: Deliverable;
 }) {
   const { data: versions } = useVersions(orgId, deliverable.id);
@@ -234,8 +305,9 @@ function VersionHistory({
             {new Date(version.created_at).toLocaleString()} ·{" "}
             {version.citation_count} sources · {version.review_coverage} reviewed
           </span>
-          <span className="ml-auto">
+          <span className="ml-auto flex items-center gap-2">
             <DownloadRow orgId={orgId} version={version} />
+            <FeedbackButtons orgId={orgId} projectId={projectId} version={version} />
           </span>
         </li>
       ))}
